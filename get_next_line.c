@@ -7,8 +7,6 @@ char    *xtnd_buf(int const fd, char *buf, int *ret)
     char    *str = NULL;
 
     *ret = read(fd, tmp, BUFF_SIZE);
-    if (ret < 0)
-        return (NULL);
     tmp[*ret] = '\0';
     str = ft_strjoin(buf, tmp);
     free(buf);
@@ -28,7 +26,6 @@ int     get_next_line(int const fd, char **line)
         buf = ft_strnew(0);
     while (ret > 0)
     {
-        buf = xtnd_buf(fd, buf, &ret);
         if ((str = ft_strchr(buf, '\n')) != NULL)
         {
             *str = '\0'; //replce newline with nullchar
@@ -36,12 +33,16 @@ int     get_next_line(int const fd, char **line)
             ft_memmove(buf, str + 1, ft_strlen(str + 1) + 1);
             return (1);
         }
+        buf = xtnd_buf(fd, buf, &ret);
     }
     if (*buf)
     {
         *line = ft_strdup(buf);
-        free(buf);
+    //    free(buf);
+        ft_bzero(buf, ft_strlen(buf));
         return (1);
     }
-    return (ret);
+    if (ret < 0)
+        return(-1);
+    return(0);
 }
